@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "rinkelinmaki",
+  "author": "Mr muscle",
+  "url": "www.localhost.com",
+  "likes": 6
+}
