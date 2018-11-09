@@ -5,41 +5,30 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
-const Blog = mongoose.model('Blog', {
-  title: String,
-  author: String,
-  url: String,
-  likes: Number
-});
-
-module.exports = Blog;
+const blogsRouter = require('./controllers/blogs');
 
 app.use(cors());
 app.use(bodyParser.json());
-
 app.use(morgan(':method :url :res :status :response-time[4]'));
 
 morgan.token('res', function(res) {
   return JSON.stringify(res.body);
 });
 
-const mongoUrl = 'mongodb://blogger:bl0gg3r1@ds155823.mlab.com:55823/fullstackopen-blog-dev';
-mongoose.connect(mongoUrl);
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
-app.get('/api/blogs', (request, response) => {
-  Blog.find({}).then(blogs => {
-    response.json(blogs);
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('connected to database', process.env.MONGODB_URI);
+  })
+  .catch(err => {
+    console.log(err);
   });
-});
 
-app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body);
-
-  blog.save().then(result => {
-    response.status(201).json(result);
-  });
-});
+app.use('api/blogs', blogsRouter);
 
 const PORT = 3003;
 app.listen(PORT, () => {
