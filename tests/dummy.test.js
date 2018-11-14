@@ -97,3 +97,25 @@ describe('favorite blog', () => {
     expect(result).toEqual(fav);
   });
 });
+
+describe('most blogs', () => {
+  test('written by the same author', () => {
+    const result = listHelper.mostBlogs(blogs);
+    const author = {
+      author: 'Robert C. Martin',
+      blogs: 3
+    };
+    expect(result).toEqual(author);
+  });
+});
+
+describe('most likes', () => {
+  test('name of the author and likes count', () => {
+    const result = listHelper.mostLikes(blogs);
+    const author = {
+      author: 'Edsger W. Dijkstra',
+      likes: 17
+    };
+    expect(result).toEqual(author);
+  });
+});

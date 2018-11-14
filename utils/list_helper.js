@@ -17,8 +17,20 @@ const favoriteBlog = blogs => {
   return likedBlog;
 };
 
+const mostBlogs = blogs => {
+  // let acc = blogs.reduce((acc, val) => acc.set(val, 1 + (acc.get(val) || 0)), [new Map()]);
+
+  return blogs;
+};
+
+const mostLikes = blogs => {
+  return blogs;
+};
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs,
+  mostLikes
 };
