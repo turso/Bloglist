@@ -10,7 +10,7 @@ blogsRouter.post('/', async (req, res) => {
   try {
     const body = req.body;
 
-    if (body.title === undefined) {
+    if (body.title === undefined || body.url === undefined) {
       return res.status(400).json({ error: 'title missing' });
     }
 

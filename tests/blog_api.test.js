@@ -105,7 +105,7 @@ describe('blogs api tests', async () => {
     expect(titles).toContain('Teuvon Testikirja');
   });
 
-  test.only('if blog post hasnt specified like count, the count is set to 0', async () => {
+  test('if blog post hasnt specified like count, the count is set to 0', async () => {
     const newBlog = {
       title: 'Teuvon Testikirja',
       author: 'Teuvo',
@@ -123,6 +123,22 @@ describe('blogs api tests', async () => {
 
     expect(response.body.length).toBe(initialBlogs.length + 1);
     expect(likes).toContain(0);
+  });
+
+  test('if blog post title or url is undefined throw error 400', async () => {
+    const newBlog = {
+      author: 'Teuvo',
+      likes: 16
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    expect(response.body.length).toBe(initialBlogs.length);
   });
 
   afterAll(() => {
