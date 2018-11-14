@@ -2,8 +2,8 @@ POST http://localhost:3001/api/blogs
 content-type: application/json
 
 {
-  "title": "keksitalo",
-  "author": "Mr mylly",
-  "url": "www.localhost.com",
-  "likes": 15
+  "title": "Pastakirja",
+  "author": "Markku Kaneva",
+  "url": "www.pasta.fi",
+  "likes": 4
 }

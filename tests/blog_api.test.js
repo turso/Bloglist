@@ -79,10 +79,30 @@ describe('blogs api tests', async () => {
 
   test('a specific blog is within the returned blogs', async () => {
     const response = await api.get('/api/blogs');
-
     const contents = response.body.map(r => r.title);
 
     expect(contents).toContain('TDD harms architecture');
+  });
+
+  test('a valid blog can be added ', async () => {
+    const newBlog = {
+      title: 'Teuvon Testikirja',
+      author: 'Teuvo',
+      url: 'www.teuvontestit.com',
+      likes: 24
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map(r => r.title);
+
+    expect(response.body.length).toBe(initialBlogs.length + 1);
+    expect(titles).toContain('Teuvon Testikirja');
   });
 
   afterAll(() => {

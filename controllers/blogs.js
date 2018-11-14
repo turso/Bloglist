@@ -6,12 +6,27 @@ blogsRouter.get('/', async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.post('/', (req, res) => {
-  const blog = new Blog(req.body);
+blogsRouter.post('/', async (req, res) => {
+  try {
+    const body = req.body;
 
-  blog.save().then(result => {
-    res.status(201).json(result);
-  });
+    if (body.title === undefined) {
+      return res.status(400).json({ error: 'title missing' });
+    }
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    });
+
+    const savedBlog = await blog.save();
+    res.status(201).json(savedBlog);
+  } catch (exception) {
+    console.log(exception);
+    res.status(500).json({ error: 'something went wrong...' });
+  }
 });
 
 module.exports = blogsRouter;
