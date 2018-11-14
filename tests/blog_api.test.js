@@ -41,7 +41,7 @@ const initialBlogs = [
     title: 'TDD harms architecture',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-    likes: 0,
+    likes: 1,
     __v: 0
   },
   {
@@ -84,7 +84,7 @@ describe('blogs api tests', async () => {
     expect(contents).toContain('TDD harms architecture');
   });
 
-  test('a valid blog can be added ', async () => {
+  test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'Teuvon Testikirja',
       author: 'Teuvo',
@@ -103,6 +103,26 @@ describe('blogs api tests', async () => {
 
     expect(response.body.length).toBe(initialBlogs.length + 1);
     expect(titles).toContain('Teuvon Testikirja');
+  });
+
+  test.only('if blog post hasnt specified like count, the count is set to 0', async () => {
+    const newBlog = {
+      title: 'Teuvon Testikirja',
+      author: 'Teuvo',
+      url: 'www.teuvontestit.com'
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const likes = response.body.map(r => r.likes);
+
+    expect(response.body.length).toBe(initialBlogs.length + 1);
+    expect(likes).toContain(0);
   });
 
   afterAll(() => {

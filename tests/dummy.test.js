@@ -49,7 +49,7 @@ const blogs = [
     title: 'TDD harms architecture',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-    likes: 0,
+    likes: 1,
     __v: 0
   },
   {
@@ -82,7 +82,7 @@ describe('total likes', () => {
 
   test('of a bigger list is calculated right', () => {
     const result = listHelper.totalLikes(blogs);
-    expect(result).toBe(36);
+    expect(result).toBe(37);
   });
 });
 
