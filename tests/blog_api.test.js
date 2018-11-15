@@ -100,6 +100,32 @@ describe('when there is initially some blogs saved', async () => {
     });
   });
 
+  describe('deletion of a blog', async () => {
+    let addedBlog;
+
+    beforeAll(async () => {
+      addedBlog = new Blog({
+        title: 'poisto pyynnöllä HTTP DELETE',
+        author: 'Darth Fader',
+        url: 'www.darkside.fi',
+        likes: 666
+      });
+      await addedBlog.save();
+    });
+
+    test('DELETE /api/blogs/:id succeeds with proper statuscode', async () => {
+      const blogsAtStart = await helper.blogsInDb();
+
+      await api.delete(`/api/blogs/${addedBlog._id}`).expect(204);
+
+      const blogsAfterOperation = await helper.blogsInDb();
+
+      const titles = blogsAfterOperation.map(b => b.title);
+
+      expect(titles).not.toContain(addedBlog.title);
+      expect(blogsAfterOperation.length).toBe(blogsAtStart.length - 1);
+    });
+  });
   afterAll(() => {
     server.close();
   });
