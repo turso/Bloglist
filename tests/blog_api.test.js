@@ -2,143 +2,102 @@ const supertest = require('supertest');
 const { app, server } = require('../index');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const helper = require('./test_helper');
 
-const initialBlogs = [
-  {
-    _id: '5a422a851b54a676234d17f7',
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    __v: 0
-  },
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0
-  },
-  {
-    _id: '5a422b3a1b54a676234d17f9',
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
-    __v: 0
-  },
-  {
-    _id: '5a422b891b54a676234d17fa',
-    title: 'First class tests',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
-    likes: 10,
-    __v: 0
-  },
-  {
-    _id: '5a422ba71b54a676234d17fb',
-    title: 'TDD harms architecture',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-    likes: 1,
-    __v: 0
-  },
-  {
-    _id: '5a422bc61b54a676234d17fc',
-    title: 'Type wars',
-    author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 2,
-    __v: 0
-  }
-];
+describe('when there is initially some blogs saved', async () => {
+  beforeAll(async () => {
+    await Blog.deleteMany({});
 
-beforeAll(async () => {
-  await Blog.deleteMany({});
+    const blogObjects = helper.initialBlogs.map(blog => new Blog(blog));
 
-  const blogObjects = initialBlogs.map(blog => new Blog(blog));
-  const promiseArray = blogObjects.map(blog => blog.save());
+    await Promise.all(blogObjects.map(b => b.save()));
+  });
 
-  await Promise.all(promiseArray);
-});
+  test('blogs are returned as json by GET /api/blogs', async () => {
+    const blogsInDatabase = await helper.blogsInDb();
 
-describe('blogs api tests', async () => {
-  test('blogs are returned as json', async () => {
-    await api
+    const response = await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
+
+    expect(response.body.length).toBe(blogsInDatabase.length);
+
+    const returnedTitles = response.body.map(n => n.title);
+    blogsInDatabase.forEach(blog => {
+      expect(returnedTitles).toContain(blog.title);
+    });
   });
 
-  test('all blogs are returned', async () => {
-    const res = await api.get('/api/blogs');
+  test('404 returned by GET /api/blog/:id with nonexisting valid id', async () => {
+    const validNonexistingId = await helper.nonExistingId();
 
-    expect(res.body.length).toBe(initialBlogs.length);
+    await api.get(`/api/blogs/${validNonexistingId}`).expect(404);
   });
 
-  test('a specific blog is within the returned blogs', async () => {
-    const response = await api.get('/api/blogs');
-    const contents = response.body.map(r => r.title);
+  describe('adding a new blog post', async () => {
+    test('POST /api/blogs succeeds with valid data', async () => {
+      const blogsAtStart = await helper.blogsInDb();
 
-    expect(contents).toContain('TDD harms architecture');
-  });
+      const newBlog = {
+        title: 'Teuvon Testikirja',
+        author: 'Teuvo',
+        url: 'www.teuvontestit.com',
+        likes: 24
+      };
 
-  test('a valid blog can be added', async () => {
-    const newBlog = {
-      title: 'Teuvon Testikirja',
-      author: 'Teuvo',
-      url: 'www.teuvontestit.com',
-      likes: 24
-    };
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
 
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/);
+      const blogsAfterOperation = await helper.blogsInDb();
+      expect(blogsAfterOperation.length).toBe(blogsAtStart.length + 1);
 
-    const response = await api.get('/api/blogs');
-    const titles = response.body.map(r => r.title);
+      const titles = blogsAfterOperation.map(blog => blog.title);
+      expect(titles).toContain('Teuvon Testikirja');
+    });
 
-    expect(response.body.length).toBe(initialBlogs.length + 1);
-    expect(titles).toContain('Teuvon Testikirja');
-  });
+    test('if blog post hasnt specified like count, the count is set to 0', async () => {
+      const blogsAtStart = await helper.blogsInDb();
 
-  test('if blog post hasnt specified like count, the count is set to 0', async () => {
-    const newBlog = {
-      title: 'Teuvon Testikirja',
-      author: 'Teuvo',
-      url: 'www.teuvontestit.com'
-    };
+      const newBlog = {
+        title: 'Teuvon Testikirja',
+        author: 'Teuvo',
+        url: 'www.teuvontestit.com'
+      };
 
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/);
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
 
-    const response = await api.get('/api/blogs');
-    const likes = response.body.map(r => r.likes);
+      const blogsAfterOperation = await helper.blogsInDb();
+      expect(blogsAfterOperation.length).toBe(blogsAtStart.length + 1);
 
-    expect(response.body.length).toBe(initialBlogs.length + 1);
-    expect(likes).toContain(0);
-  });
+      const likes = blogsAfterOperation.map(b => b.likes);
+      expect(likes).toContain(0);
+    });
 
-  test('if blog post title or url is undefined throw error 400', async () => {
-    const newBlog = {
-      author: 'Teuvo',
-      likes: 16
-    };
+    test('if blog post title or url is undefined throw error 400', async () => {
+      const blogsAtStart = await helper.blogsInDb();
 
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(400)
-      .expect('Content-Type', /application\/json/);
+      const newBlog = {
+        author: 'Teuvo',
+        likes: 16
+      };
 
-    const response = await api.get('/api/blogs');
-    expect(response.body.length).toBe(initialBlogs.length);
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/);
+
+      const blogsAfterOperation = await helper.blogsInDb();
+      expect(blogsAfterOperation.length).toBe(blogsAtStart.length);
+    });
   });
 
   afterAll(() => {
