@@ -99,7 +99,7 @@ describe('favorite blog', () => {
 });
 
 describe('most blogs', () => {
-  test('written by the same author', () => {
+  test.skip('written by the same author', () => {
     const result = listHelper.mostBlogs(blogs);
     const author = {
       author: 'Robert C. Martin',
@@ -110,7 +110,7 @@ describe('most blogs', () => {
 });
 
 describe('most likes', () => {
-  test('name of the author and likes count', () => {
+  test.skip('name of the author and likes count', () => {
     const result = listHelper.mostLikes(blogs);
     const author = {
       author: 'Edsger W. Dijkstra',
