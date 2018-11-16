@@ -1,10 +1,22 @@
 const mongoose = require('mongoose');
 
-const Blog = mongoose.model('Blog', {
+const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
-  likes: Number
+  likes: { type: Number, default: 0 }
 });
+
+blogSchema.statics.format = blog => {
+  return {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes,
+    id: blog._id
+  };
+};
+
+const Blog = mongoose.model('Blogs', blogSchema);
 
 module.exports = Blog;

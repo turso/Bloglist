@@ -29,6 +29,18 @@ blogsRouter.post('/', async (req, res) => {
   }
 });
 
+blogsRouter.put('/:id', async (req, res) => {
+  try {
+    const blog = req.body;
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog);
+
+    res.json(Blog.format(updatedBlog));
+  } catch (exception) {
+    console.log(exception);
+    res.status(400).send({ error: 'malformatted id' });
+  }
+});
+
 blogsRouter.delete('/:id', async (req, res) => {
   try {
     await Blog.findByIdAndRemove(req.params.id);

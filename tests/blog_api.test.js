@@ -119,13 +119,44 @@ describe('when there is initially some blogs saved', async () => {
       await api.delete(`/api/blogs/${addedBlog._id}`).expect(204);
 
       const blogsAfterOperation = await helper.blogsInDb();
-
       const titles = blogsAfterOperation.map(b => b.title);
 
       expect(titles).not.toContain(addedBlog.title);
       expect(blogsAfterOperation.length).toBe(blogsAtStart.length - 1);
     });
   });
+
+  describe('updating a blog', async () => {
+    test('PUT /api/blogs/:id succeeds in updating an old blog post', async () => {
+      const blogToUpdate = new Blog({
+        title: 'Updating things',
+        author: 'R2D"',
+        url: 'www.uotdated.com',
+        likes: 4
+      });
+
+      await api
+        .post('/api/blogs')
+        .send(blogToUpdate)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+
+      const blogs = await helper.blogsInDb();
+      const latestBlog = blogs.find(b => b.title === blogToUpdate.title);
+      const updatedBlog = { ...latestBlog, likes: latestBlog.likes + 1 };
+
+      await api
+        .put(`/api/blogs/${latestBlog.id}`)
+        .send(updatedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/);
+
+      const updatedBlogs = await helper.blogsInDb();
+      const latestBlogAfterUpdate = updatedBlogs.find(b => b.title === blogToUpdate.title);
+      expect(latestBlogAfterUpdate.likes).toBe(blogToUpdate.likes + 1);
+    });
+  });
+
   afterAll(() => {
     server.close();
   });

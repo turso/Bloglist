@@ -1,0 +1,9 @@
+PUT http://localhost:3001/api/blogs/5beed0074d9fa79e03b1fc46
+content-type: application/json
+
+{
+  "title": "Pizzakirja",
+  "author": "Kakku Kaneva",
+  "url": "www.pizza.fi",
+  "likes": 22
+}

@@ -18,8 +18,6 @@ const favoriteBlog = blogs => {
 };
 
 const mostBlogs = blogs => {
-  // let acc = blogs.reduce((acc, val) => acc.set(val, 1 + (acc.get(val) || 0)), [new Map()]);
-
   return blogs;
 };
 
