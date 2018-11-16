@@ -18,11 +18,34 @@ const favoriteBlog = blogs => {
 };
 
 const mostBlogs = blogs => {
-  return blogs;
+  const authorBlogCount = blogs.reduce((allBlogs, blog) => {
+    if (blog.author in allBlogs) {
+      allBlogs[blog.author]++;
+    } else {
+      allBlogs[blog.author] = 1;
+    }
+    return allBlogs;
+  }, {});
+
+  console.log('AUTHORCOUNT', authorBlogCount);
+
+  return Object.keys(authorBlogCount)
+    .map(author => ({ author, blogs: authorBlogCount[author] }))
+    .reduce((mostBlogs, author) => ((mostBlogs.blogs || 0) > author.blogs ? mostBlogs : author), {});
 };
 
 const mostLikes = blogs => {
-  return blogs;
+  const authorLikesCount = blogs.reduce((blogs, blog) => {
+    return {
+      ...blogs,
+      [blog.author]: (blogs[blog.author] || 0) + blog.likes
+    };
+  }, {});
+  console.log('AuthorCount', authorLikesCount);
+
+  return Object.keys(authorLikesCount)
+    .map(author => ({ author, likes: authorLikesCount[author] }))
+    .reduce((mostLikes, blog) => ((mostLikes.likes || 0) > blog.likes ? mostLikes : blog), {});
 };
 
 module.exports = {
