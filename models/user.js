@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   name: String,
   passwordHash: String,
-  adult: Boolean,
+  adult: { type: Boolean, default: true },
   blogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blog' }]
 });
 

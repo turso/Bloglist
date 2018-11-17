@@ -55,6 +55,28 @@ describe.only('when there is initially one user at db', async () => {
     expect(usersAfterOperation.length).toBe(usersBeforeOperation.length);
   });
 
+  test('POST /api/users fails with proper statuscode and message if password too short', async () => {
+    const usersBeforeOperation = await usersInDb();
+
+    const newUser = {
+      username: 'testiUser',
+      name: 'Teijo Testaaja',
+      password: 'sal',
+      adult: true
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body).toEqual({ error: 'password must be longer than 3 characters' });
+
+    const usersAfterOperation = await usersInDb();
+    expect(usersAfterOperation.length).toBe(usersBeforeOperation.length);
+  });
+
   afterAll(() => {
     server.close();
   });

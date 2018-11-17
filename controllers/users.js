@@ -10,10 +10,15 @@ usersRouter.get('/', async (request, response) => {
 usersRouter.post('/', async (req, res) => {
   try {
     const body = req.body;
+    console.log('BODY', body);
 
     const existingUser = await User.find({ username: body.username });
     if (existingUser.length > 0) {
       return res.status(400).json({ error: 'username must be unique' });
+    }
+
+    if (body.password.length <= 3) {
+      return res.status(400).json({ error: 'password must be longer than 3 characters' });
     }
 
     const saltRounds = 10;
