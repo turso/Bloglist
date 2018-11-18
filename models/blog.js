@@ -14,10 +14,11 @@ blogSchema.statics.format = blog => {
     author: blog.author,
     url: blog.url,
     likes: blog.likes,
-    id: blog._id
+    // id: blog._id,
+    user: blog.user
   };
 };
 
-const Blog = mongoose.model('Blogs', blogSchema);
+const Blog = mongoose.model('Blog', blogSchema);
 
 module.exports = Blog;

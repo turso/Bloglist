@@ -38,12 +38,14 @@ describe('when there is initially some blogs saved', async () => {
   describe('adding a new blog post', async () => {
     test('POST /api/blogs succeeds with valid data', async () => {
       const blogsAtStart = await helper.blogsInDb();
+      const usersAtStart = await helper.usersInDb();
 
       const newBlog = {
         title: 'Teuvon Testikirja',
         author: 'Teuvo',
         url: 'www.teuvontestit.com',
-        likes: 24
+        likes: 24,
+        user: usersAtStart[0]._id
       };
 
       await api
@@ -61,11 +63,13 @@ describe('when there is initially some blogs saved', async () => {
 
     test('if blog post hasnt specified like count, the count is set to 0', async () => {
       const blogsAtStart = await helper.blogsInDb();
+      const usersAtStart = await helper.usersInDb();
 
       const newBlog = {
         title: 'Teuvon Testikirja',
         author: 'Teuvo',
-        url: 'www.teuvontestit.com'
+        url: 'www.teuvontestit.com',
+        user: usersAtStart[0]._id
       };
 
       await api
@@ -83,10 +87,12 @@ describe('when there is initially some blogs saved', async () => {
 
     test('if blog post title or url is undefined throw error 400', async () => {
       const blogsAtStart = await helper.blogsInDb();
+      const usersAtStart = await helper.usersInDb();
 
       const newBlog = {
         author: 'Teuvo',
-        likes: 16
+        likes: 16,
+        user: usersAtStart[0]._id
       };
 
       await api
@@ -128,11 +134,14 @@ describe('when there is initially some blogs saved', async () => {
 
   describe('updating a blog', async () => {
     test('PUT /api/blogs/:id succeeds in updating an old blog post', async () => {
+      const usersAtStart = await helper.usersInDb();
+
       const blogToUpdate = new Blog({
         title: 'Updating things',
         author: 'R2D"',
         url: 'www.uotdated.com',
-        likes: 4
+        likes: 4,
+        user: usersAtStart[0]._id
       });
 
       await api

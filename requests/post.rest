@@ -2,8 +2,9 @@ POST http://localhost:3001/api/blogs
 content-type: application/json
 
 {
-  "title": "Pizzakirja",
-  "author": "Kakku Kaneva",
-  "url": "www.pizza.fi",
-  "likes": 44
+  "title": "Rautaa",
+  "author": "Rauta Mies",
+  "url": "www.fi",
+  "likes": 32,
+  "user": "5bf076d431c3abc8bd234bb7"
 }
