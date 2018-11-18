@@ -1,5 +1,6 @@
 POST http://localhost:3001/api/login
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1yTXVzY2tsZSIsImlkIjoiNWJmMTliYzhlMjdlNmZkNmVlOGY3NTJkIiwiaWF0IjoxNTQyNTc1NDE3fQ.N8al071qWbMKjz316gr_wTc0LC6HCY2pKWN2FwTwY38
 
 {
   "username": "mrMusckle",

@@ -14,7 +14,6 @@ const config = require('./utils/config');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan(':method :url :res :status :response-time[4]'));
-
 app.use(middleware.tokenExtractor);
 
 morgan.token('res', function(res) {
