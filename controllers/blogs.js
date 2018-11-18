@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
@@ -20,15 +21,32 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 });
 
+const getTokenFrom = req => {
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7);
+  }
+  return null;
+};
+
 blogsRouter.post('/', async (req, res) => {
+  const body = req.body;
   try {
-    const body = req.body;
+    const token = getTokenFrom(req);
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    // console.log('DECODEDTOKEN', decodedToken);
+    // console.log('TOKEN ', token);
+    // console.log('DECODEDTOKEN.id', decodedToken.id);
+
+    if (!token || !decodedToken.id) {
+      return res.status(401).json({ error: 'token missing or invalid' });
+    }
 
     if (body.title === undefined || body.url === undefined) {
       return res.status(400).json({ error: 'title missing or url missing' });
     }
 
-    const user = await User.findById(body.user);
+    const user = await User.findById(decodedToken.id);
 
     const blog = new Blog({
       title: body.title,
@@ -45,8 +63,12 @@ blogsRouter.post('/', async (req, res) => {
 
     res.status(201).json(Blog.format(blog));
   } catch (exception) {
-    console.log(exception);
-    res.status(500).json({ error: 'something went wrong...' });
+    if (exception.name === 'JsonWebTokenError') {
+      res.status(401).json({ error: exception.message });
+    } else {
+      console.log(exception);
+      res.status(500).json({ error: 'something went wrong...' });
+    }
   }
 });
 

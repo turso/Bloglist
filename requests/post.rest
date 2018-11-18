@@ -1,10 +1,11 @@
 POST http://localhost:3001/api/blogs
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1yTXVzY2tsZSIsImlkIjoiNWJmMTliYzhlMjdlNmZkNmVlOGY3NTJkIiwiaWF0IjoxNTQyNTYxNzAwfQ.5ZW8JtvP9SAgiRMOF81pVIDTFpHm7AlhKkRhpNhJeAE
 
 {
-  "title": "Rautaa",
-  "author": "Rauta Mies",
+  "title": "Pehmeät arvot",
+  "author": "Hentonen",
   "url": "www.fi",
-  "likes": 32,
-  "user": "5bf076d431c3abc8bd234bb7"
+  "likes": 2,
+  "user": "5bf19bc8e27e6fd6ee8f752d"
 }
