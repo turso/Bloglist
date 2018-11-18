@@ -8,37 +8,38 @@ blogsRouter.get('/', async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.get('/:id', async (request, response) => {
+blogsRouter.get('/:id', async (req, res) => {
   try {
-    const blog = await Blog.findById(request.params.id);
+    const blog = await Blog.findById(req.params.id);
     if (blog) {
-      response.json(Blog.format(blog));
+      res.json(Blog.format(blog));
     } else {
-      response.status(404).end();
+      res.status(404).end();
     }
   } catch (exception) {
-    response.status(400).send({ error: 'malformatted id' });
+    res.status(400).send({ error: 'malformatted id' });
   }
 });
 
-const getTokenFrom = req => {
-  const authorization = req.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-};
+// const getTokenFrom = req => {
+//   const authorization = req.get('authorization');
+//   console.log('AUTHORIZATION SISALTO ', authorization);
+//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+//     return authorization.substring(7);
+//   }
+//   return null;
+// };
 
 blogsRouter.post('/', async (req, res) => {
   const body = req.body;
   try {
-    const token = getTokenFrom(req);
-    const decodedToken = jwt.verify(token, process.env.SECRET);
-    // console.log('DECODEDTOKEN', decodedToken);
-    // console.log('TOKEN ', token);
+    // const token = getTokenFrom(req);
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+    console.log('DECODEDTOKEN', decodedToken);
+    console.log('REQ.TOKEN ', req.token);
     // console.log('DECODEDTOKEN.id', decodedToken.id);
 
-    if (!token || !decodedToken.id) {
+    if (!req.token || !decodedToken.id) {
       return res.status(401).json({ error: 'token missing or invalid' });
     }
 
