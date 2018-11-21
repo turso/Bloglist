@@ -3,9 +3,9 @@ content-type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1yTXVzY2tsZSIsImlkIjoiNWJmMTliYzhlMjdlNmZkNmVlOGY3NTJkIiwiaWF0IjoxNTQyNTY5MjY0fQ.bvV28gLzGV5JizwEXdqt1Zxk3YJm1PlSWmCAZPDy_AM
 
 {
-  "title": "Testi Kirja",
-  "author": "testo",
-  "url": "www.fi",
-  "likes": 4,
+  "title": "Middlewaret kiinnostaa",
+  "author": "Makke Middleware",
+  "url": "waretus.fi",
+  "likes": 69,
   "user": "5bf19bc8e27e6fd6ee8f752d"
 }

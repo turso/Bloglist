@@ -84,12 +84,16 @@ blogsRouter.delete('/:id', async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     // console.log('USER', user);
     // console.log('BLOG', blog);
-
-    if (user._id.toString() === blog.user.toString()) {
+    if (blog.user !== undefined) {
+      if (user._id.toString() === blog.user.toString()) {
+        await Blog.findByIdAndRemove(req.params.id);
+        res.status(204).end();
+      } else {
+        res.status(403).end();
+      }
+    } else {
       await Blog.findByIdAndRemove(req.params.id);
       res.status(204).end();
-    } else {
-      res.status(403).end();
     }
   } catch (exception) {
     if (exception.name === 'JsonWebTokenError') {
